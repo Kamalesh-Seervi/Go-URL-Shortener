@@ -28,5 +28,6 @@ func Setup() {
 	if err != nil {
 		fmt.Println(err)
 	}
+	fmt.Println("Connection successfull")
 
 }
