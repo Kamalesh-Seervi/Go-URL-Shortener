@@ -12,14 +12,16 @@ var db *gorm.DB
 type Url struct {
 	ID       uint64 `json:"id" gorm:"primaryKey"`
 	Redirect string `json:"redirect" gorm:"not null"`
-	Url      string `json:"url" gorm:"unique;not null"`
+	Url      string `json:"url" gorm:"unique"`
 	Clicked  uint64 `json:"clicked"`
 	Random   bool   `json:"random"`
 }
 
 func Setup() {
-	conn := "host=localhost user=postgres password=0000 dbname=url-shortner port=5432"
+	conn := "host=172.21.0.2 port=5432 user=root password=changeme dbname=mydb sslmode=disable"
+	fmt.Println(conn)
 	var err error
+
 	db, err := gorm.Open(postgres.Open(conn), &gorm.Config{})
 	if err != nil {
 		panic(err)
@@ -28,6 +30,4 @@ func Setup() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println("Connection successfull")
-
 }

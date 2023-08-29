@@ -1,26 +1,33 @@
 package models
 
+import "errors"
+
 func GetAllUrl() ([]Url, error) {
 
-	var urls []Url
-	tx := db.Find(&urls)
+	var urltable []Url
+	tx := db.Find(&urltable)
 
 	if tx.Error != nil {
 		panic(tx.Error)
 	}
 
-	return urls, nil
+	return urltable, nil
 }
 
-func GetOneUrl(id uint64) (Url ,error) {
+
+func GetOneUrl(id uint64) (Url, error) {
 	var url Url
 
-	tx := db.Where("id = ?", id).Find(&url)
+	tx := db.Where("id = ?", id).First(&url)
 	if tx.Error != nil {
 		return Url{}, tx.Error
 	}
-	return url, nil
 
+	if url.ID == 0 {
+		return Url{}, errors.New("URL not found")
+	}
+
+	return url, nil
 }
 
 func CreateUrl(url Url) error {
@@ -39,8 +46,8 @@ func DeleteUrl(id uint64) error {
 
 }
 
-func FindByGolyUrl(urll string) (Url, error) {
-	var url Url
-	tx := db.Where("url = ?", urll).First(&url)
-	return url, tx.Error
-}
+// func FindByGolyUrl(urll string) (Url, error) {
+// 	var url Url
+// 	tx := db.Where("url = ?", urll).First(&url)
+// 	return url, tx.Error
+// }
