@@ -9,9 +9,9 @@ RUN apt-get upgrade -y
 RUN apt-get install -y ca-certificates
 RUN apt-get install golang-go -y
 RUN go get -u github.com/cosmtrek/air
-COPY ../..main.sh /main.sh
+COPY ./main.sh /app/main.sh
 RUN chmod +x /app/main.sh
 
 RUN chmod +x *.go
 
-CMD ["/main.sh"]
+CMD ["/app/main.sh"]
