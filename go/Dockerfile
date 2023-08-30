@@ -1,17 +1,15 @@
-FROM ubuntu:latest
+FROM golang:latest
 
 WORKDIR /app
 
-COPY . /app
+COPY go.mod go.sum ./
 
-RUN apt-get update -y
-RUN apt-get upgrade -y
-RUN apt-get install -y ca-certificates
-RUN apt-get install golang-go -y
+RUN go mod download
 RUN go get -u github.com/cosmtrek/air
-COPY ../..main.sh /main.sh
-RUN chmod +x /app/main.sh
 
-RUN chmod +x *.go
+COPY . .
 
-CMD ["/main.sh"]
+RUN go build -o main .
+
+EXPOSE 7777
+ENTRYPOINT ["air"]

@@ -61,5 +61,5 @@ func ServerListen() {
 	router.GET("/url/:id", getUrl)
 	router.POST("/url", createUrl)
 
-	router.Run(":7777")
+	router.Run()
 }
