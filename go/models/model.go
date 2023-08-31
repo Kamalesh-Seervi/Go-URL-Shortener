@@ -18,7 +18,7 @@ type Url struct {
 }
 
 func Setup() {
-	conn := "host=172.23.0.2 port=5432 user=root password=changeme dbname=mydb sslmode=enable"
+	conn := "host=db port=5432 user=root password=changeme dbname=mydb "
 	fmt.Println(conn)
 	var err error
 
