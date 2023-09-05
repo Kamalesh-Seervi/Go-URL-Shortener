@@ -11,7 +11,10 @@ COPY . .
 
 # RUN go build -o main .
 
-EXPOSE 7777
+ENV PORT=7777
+
+# Expose the port on which the application will listen
+EXPOSE $PORT
 # ENTRYPOINT ["air"]
 
 CMD ["go" ,"run" ,"."]

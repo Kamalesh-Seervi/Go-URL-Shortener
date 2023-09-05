@@ -14,7 +14,6 @@ func GetAllUrl() ([]Url, error) {
 	return urltable, nil
 }
 
-
 func GetOneUrl(id uint64) (Url, error) {
 	var url Url
 
@@ -46,8 +45,8 @@ func DeleteUrl(id uint64) error {
 
 }
 
-// func FindByGolyUrl(urll string) (Url, error) {
-// 	var url Url
-// 	tx := db.Where("url = ?", urll).First(&url)
-// 	return url, tx.Error
-// }
+func FindByGolyUrl(urll string) (Url, error) {
+	var url Url
+	tx := db.Where("url = ?", urll).First(&url)
+	return url, tx.Error
+}

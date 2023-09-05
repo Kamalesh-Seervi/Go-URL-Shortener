@@ -22,7 +22,7 @@ func Setup() {
 	fmt.Println(conn)
 	var err error
 
-	db, err := gorm.Open(postgres.Open(conn), &gorm.Config{})
+	db, err = gorm.Open(postgres.Open(conn), &gorm.Config{})
 	if err != nil {
 		panic(err)
 	}

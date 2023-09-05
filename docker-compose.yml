@@ -6,6 +6,8 @@ services:
   go:
     build:
       context: ./go
+    ports: 
+      - 7777:7777
     volumes:
       - ./go:/app
 
