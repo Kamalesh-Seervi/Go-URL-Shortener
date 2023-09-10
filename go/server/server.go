@@ -10,6 +10,16 @@ import (
 	"github.com/Kamalesh-Seervi/url/utils"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+)
+
+var userStatus = prometheus.NewCounterVec(
+	prometheus.CounterOpts{
+		Name: "http_request_get_user_status_count", // metric name
+		Help: "Count of status returned by user.",
+	},
+	[]string{"user", "status"}, // labels
 )
 
 func getAllUrl(c *gin.Context) {
@@ -125,6 +135,11 @@ func deleteUrl(c *gin.Context) {
 	})
 }
 
+func init() {
+	// we need to register the counter so prometheus can collect this metric
+	prometheus.MustRegister(userStatus)
+}
+
 func ServerListen() {
 	router := gin.Default()
 
@@ -136,10 +151,11 @@ func ServerListen() {
 	router.POST("/url", createUrl)
 	router.PATCH("/url", updateUrl)
 	router.DELETE("/url/:id", deleteUrl)
+	router.GET("/metrics", gin.WrapH(promhttp.Handler()))
 
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "7777" // Default port
+		port = "9000" // Default port
 	}
 	router.Run(":" + port)
 }

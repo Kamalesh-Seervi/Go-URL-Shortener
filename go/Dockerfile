@@ -11,7 +11,7 @@ COPY . .
 
 # RUN go build -o main .
 
-ENV PORT=7777
+ENV PORT=9000
 
 # Expose the port on which the application will listen
 EXPOSE $PORT
