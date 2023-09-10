@@ -29,8 +29,8 @@ func GetOneUrl(id uint64) (Url, error) {
 	return url, nil
 }
 
-func CreateUrl(url Url) error {
-	tx := db.Create(&url)
+func CreateUrl(url *Url) error {
+	tx := db.Create(url)
 	return tx.Error
 }
 
@@ -43,6 +43,7 @@ func DeleteUrl(id uint64) error {
 	tx := db.Unscoped().Delete(&Url{}, id)
 	return tx.Error
 
+	
 }
 
 func FindByGolyUrl(urll string) (Url, error) {

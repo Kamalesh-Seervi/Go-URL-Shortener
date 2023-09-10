@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 	"strconv"
@@ -9,16 +10,38 @@ import (
 	"github.com/Kamalesh-Seervi/url/utils"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 )
 
-func getAllRedirects(c *gin.Context) {
+func getAllUrl(c *gin.Context) {
 	urls, err := models.GetAllUrl()
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Failed to retrieve URLs"})
 		return
 	}
 	c.JSON(200, urls)
+}
+
+func redirectLink(c *gin.Context) {
+	golyURL := c.Param("redirect")
+	goly, err := models.FindByGolyUrl(golyURL)
+	fmt.Println("golyURL:", golyURL)
+	fmt.Println("URl", goly)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "could not find goly in DB " + err.Error(),
+		})
+		return
+	}
+
+	// Grab any stats you want...
+	goly.Clicked += 1
+
+	err = models.UpdateUrl(goly)
+	if err != nil {
+		fmt.Printf("error updating: %v\n", err)
+	}
+
+	c.Redirect(http.StatusTemporaryRedirect, goly.Redirect)
 }
 
 func getUrl(c *gin.Context) {
@@ -38,22 +61,27 @@ func getUrl(c *gin.Context) {
 }
 
 func createUrl(c *gin.Context) {
-	c.Request.ParseForm()
-	url := models.Url{
-		Url:    uuid.New().String(),
-		Random: c.Request.FormValue("random") == "true",
+	var url models.Url
+
+	if err := c.ShouldBindJSON(&url); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "error parsing JSON " + err.Error(),
+		})
+		return
 	}
 
 	if url.Random {
 		url.Url = utils.Base62(8)
 	}
 
-	err := models.CreateUrl(url)
-	if err != nil {
-		c.JSON(500, gin.H{"error": "Failed to create URL in DB"})
+	if err := models.CreateUrl(&url); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "could not create goly in db " + err.Error(),
+		})
 		return
 	}
-	c.JSON(201, url)
+
+	c.JSON(http.StatusOK, url)
 }
 
 func updateUrl(c *gin.Context) {
@@ -101,7 +129,9 @@ func ServerListen() {
 	router := gin.Default()
 
 	router.Use(cors.Default())
-	router.GET("/urls", getAllRedirects)
+
+	router.GET("/:redirect", redirectLink)
+	router.GET("/urls", getAllUrl)
 	router.GET("/url/:id", getUrl)
 	router.POST("/url", createUrl)
 	router.PATCH("/url", updateUrl)
